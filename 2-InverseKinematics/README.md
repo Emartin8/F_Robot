@@ -1,4 +1,4 @@
-# TP2
+# Direct Kinematics
 
 The aim of this TP is to solve the inverse kinematic problem on a 3 joint leg, using simple trigonometry. Then implement the solution.
 The implementation will be tested later on a robotic leg.
