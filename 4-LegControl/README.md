@@ -1,4 +1,4 @@
-# Leg control using a Pypot
+# Leg control using Pypot
 
 The aim of this TP is to use the pypot library to communicate with the motors.
 

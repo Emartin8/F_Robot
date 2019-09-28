@@ -2,7 +2,9 @@
 
 # Robotics initiation
 From the a DC motor to a walking Hexapod, an introduction to robotics.
-<img src="hexapod.jpg" alt="Hexapod" width="300"/>
+<p align="center">
+    <img src="hexapod.jpg" alt="Hexapod" width="300"/>
+</p>
 <!-- ![Hexapod](hexapod.jpg) -->
 
 # Requirements
@@ -26,7 +28,7 @@ python setup.py install --user
 
 ## Notes
 Some files are encrypted because they contain the solutions to some of the tasks. The passwords will be shared as we move forward in class.
-Of course, I'll forget the passwords then. Note to myself: look for "Passwords for robotics initiation class" in my gmail.
+Of course, I'll forget the passwords then. Note to myself: look for "Passwords for robotics initiation class" in my mail.
 
 To decrypt:
 ```

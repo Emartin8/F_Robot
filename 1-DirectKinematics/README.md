@@ -17,8 +17,7 @@ motorX.currentPosition. What is the (x=0, y=0, z=0) point of the real leg?
 4. Implement your solution using python.
 
 **NOTES:**
-The answers to 1. 2. and 3. shall be written on a paper
-version of "leg.pdf". Your work will be collected (1 per student). Clean work expected. A solution will be given afterwards.
+The answers to 1. 2. and 3. shall be written on a paper version of "leg.pdf". Your work will be collected (1 per student). Clean work expected. A solution will be given afterwards.
 
 Expected format for task 4.:
 A file named "direct_kinematics.py" with a function ```leg_dk(theta1,
