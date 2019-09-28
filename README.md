@@ -4,10 +4,7 @@ Robotics initiation class materials by Remi Fabre and Steve N'Guyen is licensed 
 
 # Robotics initiation
 From the a DC motor to a walking Hexapod, an introduction to robotics.
-<p align="center">
-    <img src="hexapod.jpg" alt="Hexapod" width="300"/>
-</p>
-<!-- ![Hexapod](hexapod.jpg)-->
+![Hexapod](hexapod.jpg)
 
 # Requirements
 
