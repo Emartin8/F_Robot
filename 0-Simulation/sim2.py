@@ -8,7 +8,6 @@ import pybullet as p
 import pygame
 import argparse
 import kinematics
-import model
 
 sim = simulation.Simulation("rrr/robot.urdf", fixed=True, panels=True)
 parser = argparse.ArgumentParser()
@@ -49,9 +48,10 @@ while True:
                 targets[joint] = p.readUserDebugParameter(sliders[joint])
 
             T = kinematics.computeDK(
-                targets["motor1"], targets["motor2"], targets["motor3"]
+                -targets["motor1"], -targets["motor2"], targets["motor3"]
             )
             # T = model.direct(targets)
+
             p.resetBasePositionAndOrientation(target, T, [0, 0, 0, 1])
 
         elif args.mode == "inverse" or args.mode == "inverse-iterative":
