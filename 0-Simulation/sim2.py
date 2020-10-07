@@ -63,8 +63,8 @@ while True:
             if args.mode == "inverse":
                 alphas = kinematics.computeIK(x, y, z)
                 targets = {
-                    "motor1": alphas[0],
-                    "motor2": alphas[1],
+                    "motor1": -alphas[0],
+                    "motor2": -alphas[1],
                     "motor3": alphas[2],
                 }
             elif args.mode == "inverse-iterative":
