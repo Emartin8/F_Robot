@@ -10,6 +10,7 @@ pip install numpy pygame pybullet onshape-to-robot transforms3d scipy
 ```
 
 # Usage
+There are several simulation files but generaly ```python sim_hexa.py --help``` gives some info on how to use them.
 Make sure your file ```kinematics.py``` is in this folder.
 ```bash
 python sim2.py --mode direct
@@ -22,4 +23,10 @@ python sim2.py --mode circle
 ```
 ```bash
 python sim2.py --mode triangle
+```
+
+# Videos
+https://youtu.be/w3psAbh3AoM
+```bash
+python sim_hexa.py --mode frozen-direct
 ```

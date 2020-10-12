@@ -62,6 +62,11 @@ while True:
 
             if args.mode == "inverse":
                 alphas = kinematics.computeIK(x, y, z)
+                print(
+                    "Asked IK for x:{}, y:{}, z{}, got theta1:{}, theta2:{}, theta3:{}".format(
+                        x, y, z, alphas[0], alphas[1], alphas[2]
+                    )
+                )
                 targets = {
                     "motor1": -alphas[0],
                     "motor2": -alphas[1],
