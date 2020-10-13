@@ -7,7 +7,7 @@ PHANTOMX_SIMULATION = "PHANTOMX_SIMULATION"
 ARM_SIMULATION = "ARM_SIMULATION"
 AX12 = "AX12"
 MOTOR_TYPE = AX12
-ROBOT_TYPE = PHANTOMX_SIMULATION
+ROBOT_TYPE = ARM_SIMULATION
 USING_SIMPLE_ROBOT = True
 USE_RADS = False
 
@@ -21,6 +21,7 @@ if ROBOT_TYPE == PHANTOMX:
     THETA3_DK_SIGN = 1
     THETA2_IK_SIGN = -1
     USE_RADS = False
+    Z_DIRECTION = -1
 elif ROBOT_TYPE == BIOLOID:
     constL1 = 51
     constL2 = 63.7
@@ -32,6 +33,7 @@ elif ROBOT_TYPE == BIOLOID:
     THETA3_DK_SIGN = -1
     THETA2_IK_SIGN = 1
     USE_RADS = False
+    Z_DIRECTION = -1
 elif ROBOT_TYPE == PHANTOMX_SIMULATION:
     constL1 = 0.054
     constL2 = 0.0645
@@ -39,8 +41,9 @@ elif ROBOT_TYPE == PHANTOMX_SIMULATION:
     theta2Correction = -16.0 * math.pi / 180.0
     theta3Correction = -43.76 * math.pi / 180.0 + theta2Correction
     THETA3_DK_SIGN = -1
-    THETA2_IK_SIGN = -1
+    THETA2_IK_SIGN = 1
     USE_RADS = True
+    Z_DIRECTION = 1
 elif ROBOT_TYPE == ARM_SIMULATION:
     constL1 = 0.085
     constL2 = 0.185
@@ -50,6 +53,7 @@ elif ROBOT_TYPE == ARM_SIMULATION:
     THETA3_DK_SIGN = 1
     THETA2_IK_SIGN = 1
     USE_RADS = True
+    Z_DIRECTION = 1
 else:
     print("ERROR: Unknwon ROBOT_TYPE '{}'".format(ROBOT_TYPE))
     sys.exit()

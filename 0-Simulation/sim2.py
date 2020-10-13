@@ -16,6 +16,8 @@ args = parser.parse_args()
 sliders = {}
 target = None
 joints = sim.getJoints()
+bx = 0.07
+bz = 0.25
 
 if args.mode == "direct":
     target = p.loadURDF("target2/robot.urdf")
@@ -28,12 +30,12 @@ elif args.mode == "inverse" or args.mode == "inverse-iterative":
     sliders["target_z"] = p.addUserDebugParameter("target_z", -1, 1, 0.25)
 elif args.mode == "triangle" or args.mode == "triangle-points":
     sliders["triangle_x"] = p.addUserDebugParameter("triangle_x", 0.01, 0.8, 0.4)
-    sliders["triangle_z"] = p.addUserDebugParameter("triangle_z", 0.01, 0.3, 0.2)
+    sliders["triangle_z"] = p.addUserDebugParameter("triangle_z", -0.2, 0.3, 0)
     sliders["triangle_h"] = p.addUserDebugParameter("triangle_h", 0.01, 0.3, 0.1)
     sliders["triangle_w"] = p.addUserDebugParameter("triangle_w", 0.01, 0.3, 0.2)
 elif args.mode == "circle" or args.mode == "circle-points":
-    sliders["circle_x"] = p.addUserDebugParameter("circle_x", 0.01, 0.8, 0.4)
-    sliders["circle_z"] = p.addUserDebugParameter("circle_z", 0.01, 0.3, 0.2)
+    sliders["circle_x"] = p.addUserDebugParameter("circle_x", -1, 1, 0.4)
+    sliders["circle_z"] = p.addUserDebugParameter("circle_z", -1, 1, 0.1)
     sliders["circle_r"] = p.addUserDebugParameter("circle_r", 0.01, 0.3, 0.1)
     sliders["circle_duration"] = p.addUserDebugParameter("circle_duration", 0.01, 10, 3)
 
@@ -51,6 +53,8 @@ while True:
                 -targets["motor1"], -targets["motor2"], targets["motor3"]
             )
             # T = model.direct(targets)
+            T[0] += bx
+            T[2] += bz
 
             p.resetBasePositionAndOrientation(target, T, [0, 0, 0, 1])
 
@@ -58,7 +62,7 @@ while True:
             x = p.readUserDebugParameter(sliders["target_x"])
             y = p.readUserDebugParameter(sliders["target_y"])
             z = p.readUserDebugParameter(sliders["target_z"])
-            p.resetBasePositionAndOrientation(target, [x, y, z], [0, 0, 0, 1])
+            p.resetBasePositionAndOrientation(target, [x + bx, y, z + bz], [0, 0, 0, 1])
 
             if args.mode == "inverse":
                 alphas = kinematics.computeIK(x, y, z)
@@ -76,57 +80,44 @@ while True:
                 if (time.time() - lastInverse) > 0.1:
                     alphas = kinematics.inverseIterative(x, y, z)
                     targets = {
-                        "motor1": alphas[0],
-                        "motor2": alphas[1],
+                        "motor1": -alphas[0],
+                        "motor2": -alphas[1],
                         "motor3": alphas[2],
                     }
 
-        elif args.mode == "triangle" or args.mode == "triangle-points":
+        elif args.mode == "triangle":
             x = p.readUserDebugParameter(sliders["triangle_x"])
             z = p.readUserDebugParameter(sliders["triangle_z"])
             h = p.readUserDebugParameter(sliders["triangle_h"])
             w = p.readUserDebugParameter(sliders["triangle_w"])
 
-            if args.mode == "triangle-points":
-                points = kinematics.trianglePoints(x, z, h, w)
-                if time.time() - lastLine > 0.1:
-                    lastLine = time.time()
-                    p.addUserDebugLine(points[0], points[1], [0, 0, 1], 2, 0.15)
-                    p.addUserDebugLine(points[1], points[2], [0, 0, 1], 2, 0.15)
-                    p.addUserDebugLine(points[2], points[0], [0, 0, 1], 2, 0.15)
-            else:
-                alphas = kinematics.triangle(x, z, h, w, sim.t)
-                targets = {
-                    "motor1": alphas[0],
-                    "motor2": alphas[1],
-                    "motor3": alphas[2],
-                }
-                sim.addDebugPosition(kinematics.direct(targets), duration=3)
+            alphas = kinematics.triangle(x, z, h, w, sim.t)
+            targets = {
+                "motor1": -alphas[0],
+                "motor2": -alphas[1],
+                "motor3": alphas[2],
+            }
+            pos = kinematics.computeDK(alphas[0], alphas[1], alphas[2])
+            pos[0] += bx
+            pos[2] += bz
+            sim.addDebugPosition(pos, duration=3)
 
-        elif args.mode == "circle" or args.mode == "circle-points":
+        elif args.mode == "circle":
             x = p.readUserDebugParameter(sliders["circle_x"])
             z = p.readUserDebugParameter(sliders["circle_z"])
             r = p.readUserDebugParameter(sliders["circle_r"])
             duration = p.readUserDebugParameter(sliders["circle_duration"])
+            alphas = kinematics.circle(x, z, r, sim.t, duration)
 
-            if args.mode == "circle-points":
-                points = kinematics.circlePoints(x, z, r)
-                if (time.time() - lastLine) > 0.2:
-                    lastLine = time.time()
-
-                    N = len(points)
-                    for k in range(N):
-                        p.addUserDebugLine(
-                            points[k], points[(k + 1) % N], [0, 0, 1], 2, 0.5
-                        )
-            else:
-                alphas = kinematics.circle(x, z, r, sim.t, duration)
-                targets = {
-                    "motor1": alphas[0],
-                    "motor2": alphas[1],
-                    "motor3": alphas[2],
-                }
-                sim.addDebugPosition(kinematics.direct(targets), duration=3)
+            targets = {
+                "motor1": -alphas[0],
+                "motor2": -alphas[1],
+                "motor3": alphas[2],
+            }
+            pos = kinematics.computeDK(alphas[0], alphas[1], alphas[2])
+            pos[0] += bx
+            pos[2] += bz
+            sim.addDebugPosition(pos, duration=3)
 
         sim.setJoints(targets)
 

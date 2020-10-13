@@ -37,6 +37,7 @@ pos, rpy = sim.getRobotPose()
 sim.setRobotPose([0, 0, 0.5], [0, 0, 0, 1])
 
 leg_center_pos = [0.1248, -0.06164, 0.001116 + 0.5]
+leg_angle = -math.pi / 4
 
 
 if args.mode == "frozen-direct":
@@ -54,12 +55,10 @@ elif args.mode == "direct":
             controls[name] = p.addUserDebugParameter(name, -math.pi, math.pi, 0)
 elif args.mode == "inverse":
     cross = p.loadURDF("target2/robot.urdf")
-    controls["target_x"] = p.addUserDebugParameter("target_x", -1, 1, 0.4)
-    controls["target_y"] = p.addUserDebugParameter("target_y", -1, 1, 0)
-    controls["target_z"] = p.addUserDebugParameter("target_z", -1, 1, 0.25)
-    controls["cross_x"] = p.addUserDebugParameter("cross_x", -1, 1, 0.4)
-    controls["cross_y"] = p.addUserDebugParameter("cross_y", -1, 1, 0)
-    controls["cross_z"] = p.addUserDebugParameter("cross_z", -1, 1, 0.25)
+    alphas = kinematics.computeDK(0, 0, 0, use_rads=True)
+    controls["target_x"] = p.addUserDebugParameter("target_x", -0.4, 0.4, alphas[0])
+    controls["target_y"] = p.addUserDebugParameter("target_y", -0.4, 0.4, alphas[1])
+    controls["target_z"] = p.addUserDebugParameter("target_z", -0.4, 0.4, alphas[2])
 
 
 while True:
@@ -68,7 +67,6 @@ while True:
         if "c1" in name or "thigh" in name or "tibia" in name:
             targets[name] = 0
     if args.mode == "frozen-direct":
-        leg_angle = -math.pi / 4
         for name in controls.keys():
             targets[name] = p.readUserDebugParameter(controls[name])
         points = kinematics.computeDKDetailed(
@@ -100,30 +98,30 @@ while True:
         x = p.readUserDebugParameter(controls["target_x"])
         y = p.readUserDebugParameter(controls["target_y"])
         z = p.readUserDebugParameter(controls["target_z"])
-        alphas = kinematics.computeIKOriented(x, y, z, 4)
+        alphas = kinematics.computeIK(x, y, z, verbose=True)
 
         # print(
         #     "Asked IK for x:{}, y:{}, z{}, got theta1:{}, theta2:{}, theta3:{}".format(
         #         x, y, z, alphas[0], alphas[1], alphas[2]
         #     )
         # )
+        dk0 = kinematics.computeDK(0, 0, 0, use_rads=True)
+        print("dk0 = {}".format(dk0))
         targets["j_c1_rf"] = alphas[0]
-        targets["j_thigh_rf"] = -alphas[1]
+        targets["j_thigh_rf"] = alphas[1]
         targets["j_tibia_rf"] = alphas[2]
-        # targets = {
-        #     "j_c1_rf": -alphas[0],
-        #     "j_thigh_rf": -alphas[1],
-        #     "j_tibia_rf": alphas[2],
-        # }
+
         state = sim.setJoints(targets)
         # Temp
         sim.setRobotPose([0, 0, 0.5], [0, 0, 0, 1])
 
-        cross_x = p.readUserDebugParameter(controls["cross_x"])
-        cross_y = p.readUserDebugParameter(controls["cross_y"])
-        cross_z = p.readUserDebugParameter(controls["cross_z"])
+        T = kinematics.rotaton_2D(x, y, z, leg_angle)
+        T[0] += leg_center_pos[0]
+        T[1] += leg_center_pos[1]
+        T[2] += leg_center_pos[2]
+        # print("Drawing cross {} at {}".format(i, T))
         p.resetBasePositionAndOrientation(
-            cross, [cross_x, cross_y, cross_z], [0, 0, 0, 1]
+            cross, T, to_pybullet_quaternion(0, 0, leg_angle)
         )
 
     sim.tick()
