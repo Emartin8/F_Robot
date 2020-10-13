@@ -9,10 +9,17 @@ import pygame
 import argparse
 import kinematics
 
-sim = simulation.Simulation("rrr/robot.urdf", fixed=True, panels=True)
 parser = argparse.ArgumentParser()
-parser.add_argument("--mode", "-m", type=str, default="direct")
+parser.add_argument(
+    "--mode",
+    "-m",
+    type=str,
+    default="direct",
+    help="Available modes : direct, inverse, circle, triangle",
+)
 args = parser.parse_args()
+sim = simulation.Simulation("rrr/robot.urdf", fixed=True, panels=True)
+
 sliders = {}
 target = None
 joints = sim.getJoints()
