@@ -45,7 +45,16 @@ elif args.mode == "circle" or args.mode == "circle-points":
     sliders["circle_z"] = p.addUserDebugParameter("circle_z", -1, 1, 0.1)
     sliders["circle_r"] = p.addUserDebugParameter("circle_r", 0.01, 0.3, 0.1)
     sliders["circle_duration"] = p.addUserDebugParameter("circle_duration", 0.01, 10, 3)
-
+elif args.mode == "segment":
+    sliders["segment_x1"] = p.addUserDebugParameter("segment_x1", -1, 1, 0.4)
+    sliders["segment_y1"] = p.addUserDebugParameter("segment_y1", -1, 1, 0.0)
+    sliders["segment_z1"] = p.addUserDebugParameter("segment_z1", -1, 1, 0.0)
+    sliders["segment_x2"] = p.addUserDebugParameter("segment_x2", -1, 1, 0.4)
+    sliders["segment_y2"] = p.addUserDebugParameter("segment_y2", -1, 1, 0.2)
+    sliders["segment_z2"] = p.addUserDebugParameter("segment_z2", -1, 1, 0.2)
+    sliders["segment_duration"] = p.addUserDebugParameter(
+        "segment_duration", 0.01, 10, 3
+    )
 lastLine = time.time()
 lastInverse = 0
 targets = {"motor" + str(k + 1): 0 for k in range(3)}
@@ -115,6 +124,34 @@ while True:
             r = p.readUserDebugParameter(sliders["circle_r"])
             duration = p.readUserDebugParameter(sliders["circle_duration"])
             alphas = kinematics.circle(x, z, r, sim.t, duration)
+
+            targets = {
+                "motor1": -alphas[0],
+                "motor2": -alphas[1],
+                "motor3": alphas[2],
+            }
+            pos = kinematics.computeDK(alphas[0], alphas[1], alphas[2])
+            pos[0] += bx
+            pos[2] += bz
+            sim.addDebugPosition(pos, duration=3)
+        elif args.mode == "segment":
+            segment_x1 = p.readUserDebugParameter(sliders["segment_x1"])
+            segment_y1 = p.readUserDebugParameter(sliders["segment_y1"])
+            segment_z1 = p.readUserDebugParameter(sliders["segment_z1"])
+            segment_x2 = p.readUserDebugParameter(sliders["segment_x2"])
+            segment_y2 = p.readUserDebugParameter(sliders["segment_y2"])
+            segment_z2 = p.readUserDebugParameter(sliders["segment_z2"])
+            duration = p.readUserDebugParameter(sliders["segment_duration"])
+            alphas = kinematics.segment(
+                segment_x1,
+                segment_y1,
+                segment_z1,
+                segment_x2,
+                segment_y2,
+                segment_z2,
+                sim.t,
+                duration,
+            )
 
             targets = {
                 "motor1": -alphas[0],
