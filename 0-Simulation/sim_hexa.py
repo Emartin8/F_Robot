@@ -73,17 +73,29 @@ while True:
             targets["j_c1_rf"], targets["j_thigh_rf"], targets["j_tibia_rf"]
         )
         i = -1
-        for T in points:
+        T = []
+        for pt in points:
             # Drawing each step of the DK calculation
             i += 1
-            T = kinematics.rotaton_2D(T[0], T[1], T[2], leg_angle)
-            T[0] += leg_center_pos[0]
-            T[1] += leg_center_pos[1]
-            T[2] += leg_center_pos[2]
+            T.append(kinematics.rotaton_2D(pt[0], pt[1], pt[2], leg_angle))
+            T[-1][0] += leg_center_pos[0]
+            T[-1][1] += leg_center_pos[1]
+            T[-1][2] += leg_center_pos[2]
             # print("Drawing cross {} at {}".format(i, T))
             p.resetBasePositionAndOrientation(
-                crosses[i], T, to_pybullet_quaternion(0, 0, leg_angle)
+                crosses[i], T[-1], to_pybullet_quaternion(0, 0, leg_angle)
             )
+
+        # # Verifying that at least one of the IK solutions matches the actual position of the motors
+        alphas = kinematics.computeIK(
+            T[-1][0], T[-1][1], T[-1][2], verbose=True, sign=1
+        )
+        alphas2 = kinematics.computeIK(
+            T[-1][0], T[-1][1], T[-1][2], verbose=True, sign=-1
+        )
+        print("Alphas = {}".format(alphas))
+        print("Alphas2 = {}".format(alphas2))
+
         # Temp
         sim.setRobotPose([0, 0, 0.5], to_pybullet_quaternion(0, 0, 0))
         # sim.setRobotPose(
@@ -98,7 +110,7 @@ while True:
         x = p.readUserDebugParameter(controls["target_x"])
         y = p.readUserDebugParameter(controls["target_y"])
         z = p.readUserDebugParameter(controls["target_z"])
-        alphas = kinematics.computeIK(x, y, z, verbose=True)
+        alphas = kinematics.computeIK(x, y, z, verbose=True, use_rads=True)
 
         # print(
         #     "Asked IK for x:{}, y:{}, z{}, got theta1:{}, theta2:{}, theta3:{}".format(
