@@ -70,7 +70,10 @@ while True:
         for name in controls.keys():
             targets[name] = p.readUserDebugParameter(controls[name])
         points = kinematics.computeDKDetailed(
-            targets["j_c1_rf"], targets["j_thigh_rf"], targets["j_tibia_rf"]
+            targets["j_c1_rf"],
+            targets["j_thigh_rf"],
+            targets["j_tibia_rf"],
+            use_rads=True,
         )
         i = -1
         T = []
@@ -85,16 +88,6 @@ while True:
             p.resetBasePositionAndOrientation(
                 crosses[i], T[-1], to_pybullet_quaternion(0, 0, leg_angle)
             )
-
-        # # Verifying that at least one of the IK solutions matches the actual position of the motors
-        alphas = kinematics.computeIK(
-            T[-1][0], T[-1][1], T[-1][2], verbose=True, sign=1
-        )
-        alphas2 = kinematics.computeIK(
-            T[-1][0], T[-1][1], T[-1][2], verbose=True, sign=-1
-        )
-        print("Alphas = {}".format(alphas))
-        print("Alphas2 = {}".format(alphas2))
 
         # Temp
         sim.setRobotPose([0, 0, 0.5], to_pybullet_quaternion(0, 0, 0))
@@ -112,13 +105,7 @@ while True:
         z = p.readUserDebugParameter(controls["target_z"])
         alphas = kinematics.computeIK(x, y, z, verbose=True, use_rads=True)
 
-        # print(
-        #     "Asked IK for x:{}, y:{}, z{}, got theta1:{}, theta2:{}, theta3:{}".format(
-        #         x, y, z, alphas[0], alphas[1], alphas[2]
-        #     )
-        # )
         dk0 = kinematics.computeDK(0, 0, 0, use_rads=True)
-        print("dk0 = {}".format(dk0))
         targets["j_c1_rf"] = alphas[0]
         targets["j_thigh_rf"] = alphas[1]
         targets["j_tibia_rf"] = alphas[2]
