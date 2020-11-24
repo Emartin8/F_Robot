@@ -14,14 +14,23 @@
    - Rotating without moving the center of the robot
 
 **Advanced behaviors:**
+
 - Any combination of rotation and straight line walking is possible. This is called an holonomic walk
+
 - Controlling the robot with a keyboard/mouse/whatever
+
 - Walk parameters can be changed on the go (frequency of the steps, step amplitude, step heigh, default robot position, etc)
+
 - Odometry. Being able to track the (x, y, theta) position of the robot while it's walking (of course the starting position is considered known)
+
 - Go to (x, y, theta). The robot can reach any (x, y, theta) goal position by walking there.
+
 - Legs move smoothly (do better then the constant spee interpolation). Keywords: acceleration, bang-bang, min-jerk, feed-forward.
+
 - The robot can change its direction on the go
+
 - Untethered robot. You can use the battery and the low level control board
+
   
 
 **A few fun ideas:**
