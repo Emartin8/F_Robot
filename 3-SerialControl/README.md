@@ -18,5 +18,7 @@ The aim of this session is to learn to communicate with the servomotors.
 
 Related documentation:
 
-- AX-12.pdf
-- http://support.robotis.com/en/product/dynamixel/ax_series/dxl_ax_actuator.htm
+- https://emanual.robotis.com/docs/en/dxl/protocol1/
+- http://support.robotis.com/en/product/actuator/dynamixel/ax_series/dxl_ax_actuator.htm
+- https://emanual.robotis.com/docs/en/popup/faq_protocol_compatibility_table/
+
