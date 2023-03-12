@@ -12,7 +12,7 @@ PHANTOMX_SIMULATION = "PHANTOMX_SIMULATION"
 ARM_SIMULATION = "ARM_SIMULATION"
 AX12 = "AX12"
 MOTOR_TYPE = AX12
-ROBOT_TYPE = PHANTOMX_SIMULATION
+ROBOT_TYPE = ARM_SIMULATION
 USING_SIMPLE_ROBOT = True
 USE_RADS_INPUT = False
 USE_RADS_OUTPUT = False
@@ -39,8 +39,8 @@ if ROBOT_TYPE == PHANTOMX:
         math.pi / 4,
         math.pi / 2,
         3 * math.pi / 4,
-        -math.pi / 2,
         -3 * math.pi / 4,
+        -math.pi / 2,
     ]
 elif ROBOT_TYPE == BIOLOID:
     constL1 = 0.001 * 51
@@ -76,12 +76,12 @@ elif ROBOT_TYPE == PHANTOMX_SIMULATION:
     USE_MM_OUTPUT = False
     Z_DIRECTION = 1
     LEG_ANGLES = [
-        -math.pi / 4,
         math.pi / 4,
-        math.pi / 2,
-        3 * math.pi / 4,
-        -3 * math.pi / 4,
+        -math.pi / 4,
         -math.pi / 2,
+        -3 * math.pi / 4,
+        3 * math.pi / 4,
+        math.pi / 2,
     ]
     LEG_CENTER_POS = [
         (0.1248, -0.06164, 0.001116),
