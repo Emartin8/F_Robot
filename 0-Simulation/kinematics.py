@@ -75,7 +75,7 @@ def triangle(x, z, h, w, t, duration):
     
     pts = triangle_points(x,z, h, w)
     
-    t = t%duration
+    t %= duration
 
     if t <= duration/3:
         dx, dy, dz = segment(pts[0][0],pts[0][1],pts[0][2],pts[1][0],pts[1][1],pts[1][2], t ,duration * 1/3)
