@@ -69,7 +69,7 @@ while True:
     if args.mode == "frozen-direct":
         for name in controls.keys():
             targets[name] = p.readUserDebugParameter(controls[name])
-        points = kinematics.computeDKDetailed(
+        points = kinematics.computeDK(
             targets["j_c1_rf"],
             targets["j_thigh_rf"],
             targets["j_tibia_rf"],
