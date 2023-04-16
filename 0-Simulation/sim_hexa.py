@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import math
+from math import degrees
 import sys
 import os
 import time
@@ -59,7 +60,8 @@ elif args.mode == "inverse":
     controls["target_x"] = p.addUserDebugParameter("target_x", -0.4, 0.4, alphas[0])
     controls["target_y"] = p.addUserDebugParameter("target_y", -0.4, 0.4, alphas[1])
     controls["target_z"] = p.addUserDebugParameter("target_z", -0.4, 0.4, alphas[2])
-
+elif args.mode == "triangle":
+    pass
 
 while True:
     targets = {}
@@ -69,7 +71,7 @@ while True:
     if args.mode == "frozen-direct":
         for name in controls.keys():
             targets[name] = p.readUserDebugParameter(controls[name])
-        points = kinematics.computeDK(
+        points = kinematics.computeDKDetailed(
             targets["j_c1_rf"],
             targets["j_thigh_rf"],
             targets["j_tibia_rf"],
@@ -80,7 +82,8 @@ while True:
         for pt in points:
             # Drawing each step of the DK calculation
             i += 1
-            T.append(kinematics.rotaton_2D(pt[0], pt[1], pt[2], leg_angle))
+            
+            T.append(kinematics.rotation_2D(pt[0], pt[1], pt[2], leg_angle))
             T[-1][0] += leg_center_pos[0]
             T[-1][1] += leg_center_pos[1]
             T[-1][2] += leg_center_pos[2]
@@ -114,7 +117,7 @@ while True:
         # Temp
         sim.setRobotPose([0, 0, 0.5], [0, 0, 0, 1])
 
-        T = kinematics.rotaton_2D(x, y, z, leg_angle)
+        T = kinematics.rotation_2D(x, y, z, leg_angle)
         T[0] += leg_center_pos[0]
         T[1] += leg_center_pos[1]
         T[2] += leg_center_pos[2]
@@ -122,6 +125,7 @@ while True:
         p.resetBasePositionAndOrientation(
             cross, T, to_pybullet_quaternion(0, 0, leg_angle)
         )
+    elif args.mode == "triangle":
+        pass
 
     sim.tick()
-
