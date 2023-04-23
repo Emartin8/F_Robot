@@ -61,7 +61,12 @@ elif args.mode == "inverse":
     controls["target_y"] = p.addUserDebugParameter("target_y", -0.4, 0.4, alphas[1])
     controls["target_z"] = p.addUserDebugParameter("target_z", -0.4, 0.4, alphas[2])
 elif args.mode == "triangle":
-    pass
+    controls["triangle_x"] = p.addUserDebugParameter("triangle_x", 0.01, 0.8, 0.01)
+    controls["triangle_z"] = p.addUserDebugParameter("triangle_z", -0.2, 0.3, 0)
+    controls["triangle_h"] = p.addUserDebugParameter("triangle_h", 0.01, 0.3, 0.1)
+    controls["triangle_w"] = p.addUserDebugParameter("triangle_w", 0.01, 0.3, 0.05)
+    controls["direction"] = p.addUserDebugParameter("direction", 0, math.pi * 2, math.pi/2)
+    controls["duration"] = p.addUserDebugParameter("duration", 1, 15, 3)
 
 while True:
     targets = {}
@@ -106,6 +111,7 @@ while True:
         x = p.readUserDebugParameter(controls["target_x"])
         y = p.readUserDebugParameter(controls["target_y"])
         z = p.readUserDebugParameter(controls["target_z"])
+        # alphas = kinematics.computeIKOriented(x, y, z, 0)
         alphas = kinematics.computeIK(x, y, z, verbose=True, use_rads=True)
 
         dk0 = kinematics.computeDK(0, 0, 0, use_rads=True)
@@ -125,7 +131,136 @@ while True:
         p.resetBasePositionAndOrientation(
             cross, T, to_pybullet_quaternion(0, 0, leg_angle)
         )
+        
+    # elif args.mode == "triangle":
+    #     x = p.readUserDebugParameter(controls["triangle_x"])
+    #     z = p.readUserDebugParameter(controls["triangle_z"])
+    #     h = p.readUserDebugParameter(controls["triangle_h"])
+    #     w = p.readUserDebugParameter(controls["triangle_w"])
+        
+    #     alphas_1 = kinematics.triangle(x, z, h, w, sim.t)
+
+    #     alphas_2 = kinematics.triangle(x, z, h, w, sim.t + 1.5)
+        
+
+         
+    #     for name in sim.getJoints():
+
+    #         if "rf" in name:
+    #             alphas = alphas_1
+    #         if "rm" in name:
+    #             alphas = alphas_2
+    #         if 'rr' in name :
+    #             alphas = alphas_1
+
+
+    #         if "lf" in name:
+    #             alphas = alphas_2
+
+    #         if "lm" in name:
+    #             alphas = alphas_1
+
+    #         if 'lr' in name :
+    #             alphas = alphas_2
+
+
+    #         if "c1" in name :
+    #             targets[name] = alphas[0]
+
+    #         if "thigh" in name:
+    #             targets[name] = alphas[1]
+
+    #         if "tibia" in name:
+    #             targets[name] = alphas[2]
+
+
+    #     state = sim.setJoints(targets)
+
+    # elif args.mode == "triangle":
+    #     x = p.readUserDebugParameter(controls["triangle_x"])
+    #     z = p.readUserDebugParameter(controls["triangle_z"])
+    #     h = p.readUserDebugParameter(controls["triangle_h"])
+    #     w = p.readUserDebugParameter(controls["triangle_w"])
+        
+    #     # alphas_1 = kinematics.triangle(x, z, h, w, sim.t)
+
+    #     # alphas_2 = kinematics.triangle(x, z, h, w, sim.t + 1.5)
+        
+
+         
+    #     for name in sim.getJoints():
+
+    #         if "rf" in name:
+    #             alphas = kinematics.triangle(x, z, h, w, sim.t + 1.5, -math.pi/4)
+    #         if "rm" in name:
+    #             alphas = kinematics.triangle(x, z, h, w, sim.t, 0)
+    #         if 'rr' in name :
+    #             alphas = kinematics.triangle(x, z, h, w, sim.t + 1.5, math.pi/4)
+    #         if "lf" in name:
+    #             alphas = kinematics.triangle(x, z, h, w, sim.t, math.pi/4)
+    #         if "lm" in name:
+    #             alphas = kinematics.triangle(x, z, h, w, sim.t + 1.5, 0)
+    #         if 'lr' in name :
+    #             alphas = kinematics.triangle(x, z, h, w, sim.t, -math.pi/4)
+
+
+    #         if "c1" in name :
+    #             targets[name] = alphas[0]
+
+    #         if "thigh" in name:
+    #             targets[name] = alphas[1]
+
+    #         if "tibia" in name:
+    #             targets[name] = alphas[2]
+
+
+    #     state = sim.setJoints(targets)
+    #     sim.setRobotPose([0, 0, 0.5], to_pybullet_quaternion(0, 0, 0))
+
+    # sim.tick()
+
+
     elif args.mode == "triangle":
-        pass
+        x = p.readUserDebugParameter(controls["triangle_x"])
+        z = p.readUserDebugParameter(controls["triangle_z"])
+        h = p.readUserDebugParameter(controls["triangle_h"])
+        w = p.readUserDebugParameter(controls["triangle_w"])
+        direction = p.readUserDebugParameter(controls["direction"])
+        duration = p.readUserDebugParameter(controls["duration"])
+        
+        # alphas_1 = kinematics.triangle(x, z, h, w, sim.t)
+
+        # alphas_2 = kinematics.triangle(x, z, h, w, sim.t + 1.5)
+        
+
+         
+        for name in sim.getJoints():
+
+            if "rf" in name:
+                alphas = kinematics.triangle(x, z, h, w, duration, sim.t + 1.5,1, direction)
+            if "rm" in name:
+                alphas = kinematics.triangle(x, z, h, w, duration, sim.t,2, direction)
+            if 'rr' in name :
+                alphas = kinematics.triangle(x, z, h, w, duration, sim.t + 1.5, 3, direction)
+            if "lf" in name:
+                alphas = kinematics.triangle(x, z, h, w, duration, sim.t, 0, direction)
+            if "lm" in name:
+                alphas = kinematics.triangle(x, z, h, w, duration, sim.t + 1.5, 5, direction)
+            if 'lr' in name :
+                alphas = kinematics.triangle(x, z, h, w, duration, sim.t, 4, direction)
+
+
+            if "c1" in name :
+                targets[name] = alphas[0]
+
+            if "thigh" in name:
+                targets[name] = alphas[1]
+
+            if "tibia" in name:
+                targets[name] = alphas[2]
+
+
+        state = sim.setJoints(targets)
+        # sim.setRobotPose([0, 0, 0.5], to_pybullet_quaternion(0, 0, 0))
 
     sim.tick()
