@@ -8,6 +8,9 @@ import argparse
 import pybullet as p
 from onshape_to_robot.simulation import Simulation
 import kinematics
+import pypot.dynamixel
+ports = pypot.dynamixel.get_available_ports()
+dxl_io = pypot.dynamixel.DxlIO(ports[0],baudrate=1000000)
 
 # from squaternion import Quaternion
 from scipy.spatial.transform import Rotation
@@ -54,6 +57,7 @@ elif args.mode == "direct":
         print(name)
         if "c1" in name or "thigh" in name or "tibia" in name:
             controls[name] = p.addUserDebugParameter(name, -math.pi, math.pi, 0)
+    
 elif args.mode == "inverse":
     cross = p.loadURDF("target2/robot.urdf")
     alphas = kinematics.computeDK(0, 0, 0, use_rads=True)

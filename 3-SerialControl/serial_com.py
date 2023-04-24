@@ -1,7 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import math
 import serial
+import pypot.dynamixel
+ports = pypot.dynamixel.get_available_ports()
+
 
 
 def open_serial(port, baud, timeout):
