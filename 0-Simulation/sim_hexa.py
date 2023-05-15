@@ -9,8 +9,8 @@ import pybullet as p
 from onshape_to_robot.simulation import Simulation
 import kinematics
 import pypot.dynamixel
-ports = pypot.dynamixel.get_available_ports()
-dxl_io = pypot.dynamixel.DxlIO(ports[0],baudrate=1000000)
+#ports = pypot.dynamixel.get_available_ports()
+#dxl_io = pypot.dynamixel.DxlIO(ports[0],baudrate=1000000)
 
 # from squaternion import Quaternion
 from scipy.spatial.transform import Rotation
@@ -70,6 +70,13 @@ elif args.mode == "triangle":
     controls["triangle_h"] = p.addUserDebugParameter("triangle_h", 0.01, 0.3, 0.1)
     controls["triangle_w"] = p.addUserDebugParameter("triangle_w", 0.01, 0.3, 0.05)
     controls["direction"] = p.addUserDebugParameter("direction", 0, math.pi * 2, math.pi/2)
+    controls["duration"] = p.addUserDebugParameter("duration", 1, 15, 3)
+elif args.mode == "cercle":
+    controls["cercle_x"] = p.addUserDebugParameter("cercle_x", 0.01, 1.0, 0.5)
+    controls["cercle_z"] = p.addUserDebugParameter("cercle_z", -0.2, 0.3, 0)
+    controls["rotation"] = p.addUserDebugParameter("rotation", -1, 1, 0)
+    controls["cercle_w"] = p.addUserDebugParameter("cercle_w", 0.01, 0.3, 0.05)
+    #controls["direction"] = p.addUserDebugParameter("direction", 0, math.pi * 2, math.pi/2)
     controls["duration"] = p.addUserDebugParameter("duration", 1, 15, 3)
 
 while True:
@@ -265,6 +272,47 @@ while True:
 
 
         state = sim.setJoints(targets)
+        # sim.setRobotPose([0, 0, 0.5], to_pybullet_quaternion(0, 0, 0))
+
+
+        #ajout tourner sur lui même
+    elif args.mode == "cercle":
+        x = p.readUserDebugParameter(controls["cercle_x"])
+        z = p.readUserDebugParameter(controls["cercle_z"])
+        h = p.readUserDebugParameter(controls["rotation"])
+        w = p.readUserDebugParameter(controls["cercle_w"])
+        #direction = p.readUserDebugParameter(controls["direction"])
+        duration = p.readUserDebugParameter(controls["duration"])
+        
+        # alphas_1 = kinematics.triangle(x, z, h, w, sim.t)
+
+        # alphas_2 = kinematics.triangle(x, z, h, w, sim.t + 1.5)
+        
+
+         
+        for name in sim.getJoints():
+
+            if "rf" in name:
+                alphas = kinematics.circle(x, z, h, w, duration)
+            if "rm" in name:
+                alphas = kinematics.circle(x, z, h, w, duration)
+            if 'rr' in name :
+                alphas = kinematics.circle(x, z, h, w, duration)
+            if "lf" in name:
+                alphas = kinematics.circle(x, z, h, w, duration)
+            if "lm" in name:
+                alphas = kinematics.circle(x, z, h, w, duration)
+            if 'lr' in name :
+                alphas = kinematics.circle(x, z, h, w, duration)
+
+            if "c1" in name :
+                targets[name] = alphas[0]
+
+
+
+
+        state = sim.setJoints(targets)
+            
         # sim.setRobotPose([0, 0, 0.5], to_pybullet_quaternion(0, 0, 0))
 
     sim.tick()
